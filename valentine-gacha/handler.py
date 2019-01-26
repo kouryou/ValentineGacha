@@ -5,23 +5,19 @@ from slackclient import SlackClient
 
 
 def random(event, context):
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": event
-    }
+
+    slack_token = os.environ["SLACK_API_TOKEN"]
+    sc = SlackClient(slack_token)
+
+    users = sc.api_call(
+        "users.list"
+    )
+
+    logger = logging.getLogger()
+    logger.warn(users)
 
     response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
+        "body": "success"
     }
 
     return response
-
-    # Use this code if you don't use the http event with the LAMBDA-PROXY
-    # integration
-    """
-    return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
-    }
-    """
