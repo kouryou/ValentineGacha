@@ -15,13 +15,18 @@ def select_random_user(event, context):
     sc = SlackClient(slack_token)
 
     # ユーザー一覧取得
-    users = sc.api_call(
+    users_list_response = sc.api_call(
         "users.list"
     )
 
+    # レスポンスからユーザー情報を抽出
+    users = users_list_response["members"]
+
+    # 対象外のユーザーを除外
+    applicable_users = [user for user in users if not user["id"] == "USLACKBOT"]
+
     # ランダムで一人選択
-    members = users["members"]
-    selected_user = random.choice(members)
+    selected_user = random.choice(applicable_users)
 
     # メッセージに必要なユーザー情報格納
     selected_user_name = selected_user["profile"]["real_name"]
