@@ -2,9 +2,10 @@ import json
 import logging
 import os
 from slackclient import SlackClient
+import random
 
 
-def random(event, context):
+def select_random_user(event, context):
 
     slack_token = os.environ["SLACK_API_TOKEN"]
     sc = SlackClient(slack_token)
@@ -12,12 +13,16 @@ def random(event, context):
     users = sc.api_call(
         "users.list"
     )
+    members = users["members"]
+    random_user = random.choice(members)
+
+    selected_user_name = random_user["profile"]["real_name"]
 
     logger = logging.getLogger()
-    logger.warn(users)
+    logger.warn(selected_user_name)
 
     response = {
-        "body": "success"
+        "name": selected_user_name
     }
 
     return response

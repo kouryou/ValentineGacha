@@ -55,8 +55,8 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  random:
-    handler: handler.random
+  select_random_user:
+    handler: handler.select_random_user
     events:
       - http:
           path: /users/random
