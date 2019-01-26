@@ -38,7 +38,7 @@ def select_random_user(event, context):
     logger.warn(selected_user_id)
 
     # 通知用メッセージ組み立て
-    send_text = "<@" + selected_user_id + ">\n" + "選ばれたのは、" + selected_user_name + "でした。 :tea:"
+    send_text = "<@" + selected_user_id + ">\n*" + event["name"] + "* さんからのチョコ :chocolate_bar: \n選ばれたのは、 *" + selected_user_name + "* でした。 :tea:"
 
     # slack通知
     sc.api_call(

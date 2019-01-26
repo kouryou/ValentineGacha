@@ -62,6 +62,10 @@ functions:
           path: /users/random
           method: post
           integration: lambda
+          request:
+            template:
+              application/json: '{ "name" : $input.json("$.name") }'
+
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
