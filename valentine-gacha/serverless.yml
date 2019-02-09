@@ -61,6 +61,7 @@ functions:
       - http:
           path: /users/random
           method: post
+          cors: true
           integration: lambda
           request:
             template:
