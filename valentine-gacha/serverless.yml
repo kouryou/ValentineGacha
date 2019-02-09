@@ -65,7 +65,7 @@ functions:
           integration: lambda
           request:
             template:
-              application/json: '{ "name" : $input.json("$.name") }'
+              application/json: '{ "name" : $input.json("$.name"), "number" : $input.json("$.number") }'
 
 
 #    The following are a few example events you can configure

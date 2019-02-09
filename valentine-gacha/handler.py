@@ -26,19 +26,26 @@ def select_random_user(event, context):
     applicable_users = [user for user in users if not user["id"] == "USLACKBOT"]
 
     # ランダムで一人選択
-    selected_user = random.choice(applicable_users)
+    selected_users = random.sample(applicable_users, event["number"])
 
-    # メッセージに必要なユーザー情報格納
-    selected_user_name = selected_user["profile"]["real_name"]
-    selected_user_id = selected_user["id"]
+    # 当選者のメンションと名前の一覧を作成
+    selected_users_name = ""
+    selected_users_mention = ""
+    for selected_user in selected_users:
+        # 当選者のメンション一覧作成
+        mention = "<@" + selected_user["id"] + ">\n"
+        selected_users_mention += mention
+        # 当選者の名前一覧作成
+        formatted_user_name = "*" + selected_user["profile"]["real_name"] + "*" + "\n"
+        selected_users_name += formatted_user_name
 
     # 選ばれたユーザー情報をログ出力
     logger = logging.getLogger()
-    logger.warn(selected_user_name)
-    logger.warn(selected_user_id)
+    logger.warn(selected_users_mention)
+    logger.warn(selected_users_name)
 
     # 通知用メッセージ組み立て
-    send_text = "<@" + selected_user_id + ">\n*" + event["name"] + "* さんからのチョコ :chocolate_bar: \n選ばれたのは、 *" + selected_user_name + "* でした。 :tea:"
+    send_text = selected_users_mention + "*" + event["name"] + "* さんからのチョコ :chocolate_bar: \n選ばれたのは、\n" + selected_users_name + "でした。 :tea:"
 
     # slack通知
     sc.api_call(
@@ -49,7 +56,7 @@ def select_random_user(event, context):
 
     # レスポンス作成
     response = {
-        "name": selected_user_name
+        "name": selected_users_name
     }
 
     return response
