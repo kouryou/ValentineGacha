@@ -3,6 +3,7 @@ import logging
 import os
 from slackclient import SlackClient
 import random
+import urllib.request
 
 
 def select_random_user(event, context):
@@ -25,7 +26,7 @@ def select_random_user(event, context):
     # 対象外のユーザーを除外
     applicable_users = [user for user in users if not user["id"] == "USLACKBOT"]
 
-    # ランダムで一人選択
+    # ランダムでユーザー選択
     selected_users = random.sample(applicable_users, event["number"])
 
     # 当選者のメンションと名前の一覧を作成
@@ -47,11 +48,15 @@ def select_random_user(event, context):
     # 通知用メッセージ組み立て
     send_text = selected_users_mention + "*" + event["name"] + "* さんからのチョコ :chocolate_bar: \n選ばれたのは、\n" + selected_users_name + "でした。 :tea:"
 
+    # メッセージ画像取得
+    image = urllib.request.urlopen('https://s3-ap-northeast-1.amazonaws.com/valentine-gacha-image/valentine.jpg').read()
+
     # slack通知
     sc.api_call(
-        "chat.postMessage",
-        channel=notice_channel,
-        text=send_text
+        "files.upload",
+        initial_comment=send_text,
+        file=image,
+        channels=notice_channel
     )
 
     # レスポンス作成
