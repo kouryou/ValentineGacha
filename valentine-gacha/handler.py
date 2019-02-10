@@ -23,8 +23,10 @@ def select_random_user(event, context):
     # レスポンスからユーザー情報を抽出
     users = users_list_response["members"]
 
-    # 対象外のユーザーを除外
-    applicable_users = [user for user in users if not user["id"] == "USLACKBOT"]
+    # 対象外のユーザーを除外(Bot, 運営者)
+    # TODO: 運営者を削除
+    excluded_users = ["USLACKBOT", "UG2Q80MFE"]
+    applicable_users = [user for user in users if not user["id"] in excluded_users]
 
     # ランダムでユーザー選択
     selected_users = random.sample(applicable_users, event["number"])
