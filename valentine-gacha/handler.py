@@ -10,13 +10,13 @@ def select_random_user(event, context):
 
     # 環境変数読み込み
     notice_channel = os.environ["SLACK_NOTICE_CHANNEL"]
-    slack_token = os.environ["SLACK_API_TOKEN"]
+    slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
 
     # SlackClient作成
-    sc = SlackClient(slack_token)
+    sc_bot = SlackClient(slack_bot_token)
 
     # ユーザー一覧取得
-    users_list_response = sc.api_call(
+    users_list_response = sc_bot.api_call(
         "users.list"
     )
 
@@ -53,11 +53,23 @@ def select_random_user(event, context):
     image = urllib.request.urlopen('https://s3-ap-northeast-1.amazonaws.com/valentine-gacha-image/valentine.jpg').read()
 
     # slack通知
-    sc.api_call(
+    sc_bot.api_call(
         "files.upload",
         initial_comment=send_text,
         file=image,
         channels=notice_channel
+    )
+
+    # 環境変数読み込み
+    slack_user_token = os.environ["SLACK_USER_TOKEN"]
+    # SlackClient作成
+    sc_user = SlackClient(slack_user_token)
+
+    # グループ名作成
+    group_name = event["name"] + "と当選者(" + ",".join(selected_users_name) + ")"
+    sc_user.api_call(
+        "groups.create",
+        name=group_name
     )
 
     # レスポンス作成
