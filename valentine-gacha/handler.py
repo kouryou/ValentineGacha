@@ -87,13 +87,13 @@ def select_random_user(event, context):
     group_id = created_group["group"]["id"]
 
     # チョコをあげる人と当選者の一覧作成
-    group_members = selected_users_id.append(event["name"])
+    selected_users_id.append(event["name"])
     # 新規グループに招待
-    for group_member in group_members:
+    for selected_user_id in selected_users_id:
         sc_user.api_call(
             "groups.invite",
             channel=group_id,
-            user=group_member
+            user=selected_user_id
         )
 
     # レスポンス作成
