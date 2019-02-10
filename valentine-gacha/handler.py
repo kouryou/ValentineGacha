@@ -4,6 +4,7 @@ import os
 from slackclient import SlackClient
 import random
 import urllib.request
+import string
 
 
 def select_random_user(event, context):
@@ -22,6 +23,8 @@ def select_random_user(event, context):
 
     # レスポンスからユーザー情報を抽出
     users = users_list_response["members"]
+
+    # TODO: バリデーション
 
     # 対象外のユーザーを除外(Bot, 運営者)
     # TODO: 運営者を削除
@@ -50,7 +53,7 @@ def select_random_user(event, context):
     logger.warn(selected_users_name)
 
     # 通知用メッセージ組み立て
-    send_text = selected_users_mention + "*" + event["name"] + "* さんがチョコあげるって :chocolate_bar: \n私からじゃないからね！"
+    send_text = selected_users_mention + "<@" + event["name"] + "> さんがチョコあげるって :chocolate_bar: \n私からじゃないからね！"
 
     # メッセージ画像取得
     image = urllib.request.urlopen('https://s3-ap-northeast-1.amazonaws.com/valentine-gacha-image/valentine.jpg').read()
@@ -68,8 +71,13 @@ def select_random_user(event, context):
     # SlackClient作成
     sc_user = SlackClient(slack_user_token)
 
+    # グループ名作成用ランダム文字列
+    random_str = ""
+    for i in range(10):
+        random_str += random.choice(string.digits + string.ascii_letters)
+
     # グループ名作成
-    group_name = event["name"] + "と当選達"
+    group_name = "当選者と女神様-" + random_str
     # グループ作成
     created_group = sc_user.api_call(
         "groups.create",
@@ -78,12 +86,14 @@ def select_random_user(event, context):
     #グループID取得
     group_id = created_group["group"]["id"]
 
-    # グループ招待
-    for selected_user_id in selected_users_id:
+    # チョコをあげる人と当選者の一覧作成
+    group_members = selected_users_id.append(event["name"])
+    # 新規グループに招待
+    for group_member in group_members:
         sc_user.api_call(
             "groups.invite",
             channel=group_id,
-            user=selected_user_id
+            user=group_member
         )
 
     # レスポンス作成
