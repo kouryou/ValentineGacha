@@ -30,15 +30,14 @@ def select_random_user(event, context):
     selected_users = random.sample(applicable_users, event["number"])
 
     # 当選者のメンションと名前の一覧を作成
-    selected_users_name = ""
+    selected_users_name = []
     selected_users_mention = ""
     for selected_user in selected_users:
         # 当選者のメンション一覧作成
         mention = "<@" + selected_user["id"] + ">\n"
         selected_users_mention += mention
         # 当選者の名前一覧作成
-        formatted_user_name = "*" + selected_user["profile"]["real_name"] + "*" + "\n"
-        selected_users_name += formatted_user_name
+        selected_users_name.append(selected_user["profile"]["real_name"])
 
     # 選ばれたユーザー情報をログ出力
     logger = logging.getLogger()
@@ -46,7 +45,7 @@ def select_random_user(event, context):
     logger.warn(selected_users_name)
 
     # 通知用メッセージ組み立て
-    send_text = selected_users_mention + "*" + event["name"] + "* さんからのチョコ :chocolate_bar: \n選ばれたのは、\n" + selected_users_name + "でした。 :tea:"
+    send_text = selected_users_mention + "*" + event["name"] + "* さんがチョコあげるって :chocolate_bar: \n私からじゃないからね！"
 
     # メッセージ画像取得
     image = urllib.request.urlopen('https://s3-ap-northeast-1.amazonaws.com/valentine-gacha-image/valentine.jpg').read()
