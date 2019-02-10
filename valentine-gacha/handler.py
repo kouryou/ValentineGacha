@@ -33,8 +33,11 @@ def select_random_user(event, context):
 
     # 当選者のメンションと名前の一覧を作成
     selected_users_name = []
+    selected_users_id = []
     selected_users_mention = ""
     for selected_user in selected_users:
+        # 当選者のID一覧作成
+        selected_users_id.append(selected_user["id"])
         # 当選者のメンション一覧作成
         mention = "<@" + selected_user["id"] + ">\n"
         selected_users_mention += mention
@@ -66,11 +69,22 @@ def select_random_user(event, context):
     sc_user = SlackClient(slack_user_token)
 
     # グループ名作成
-    group_name = event["name"] + "と当選者(" + ",".join(selected_users_name) + ")"
-    sc_user.api_call(
+    group_name = event["name"] + "と当選達"
+    # グループ作成
+    created_group = sc_user.api_call(
         "groups.create",
         name=group_name
     )
+    #グループID取得
+    group_id = created_group["group"]["id"]
+
+    # グループ招待
+    for selected_user_id in selected_users_id:
+        sc_user.api_call(
+            "groups.invite",
+            channel=group_id,
+            user=selected_user_id
+        )
 
     # レスポンス作成
     response = {
