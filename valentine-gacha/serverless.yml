@@ -57,6 +57,7 @@ provider:
 functions:
   select_random_user:
     handler: handler.select_random_user
+    timeout: 60
     events:
       - http:
           path: /users/random
