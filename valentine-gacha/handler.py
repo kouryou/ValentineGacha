@@ -56,7 +56,7 @@ def select_random_user(event, context):
     send_text = selected_users_mention + "<@" + event["name"] + "> さんがチョコあげるって :chocolate_bar: \n私からじゃないからね！"
 
     # メッセージ画像取得
-    image = urllib.request.urlopen('https://s3-ap-northeast-1.amazonaws.com/valentine-gacha-image/valentine.jpg').read()
+    image = urllib.request.urlopen(os.environ["MESSAGE_IMAGE_URL"]).read()
 
     # slack通知
     sc_bot.api_call(
@@ -96,9 +96,12 @@ def select_random_user(event, context):
             user=selected_user_id
         )
 
+    new_channel_url = os.environ["VALENTINE_GACHA_URL"] + group_id
+
     # レスポンス作成
     response = {
-        "name": selected_users_name
+        "name": selected_users_name,
+        "url": new_channel_url
     }
 
     return response
