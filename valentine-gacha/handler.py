@@ -24,7 +24,17 @@ def select_random_user(event, context):
     # レスポンスからユーザー情報を抽出
     users = users_list_response["members"]
 
-    # TODO: バリデーション
+    # バリデーション
+    # 指定人数がチョコ欲しい人を超えていた場合エラー
+    if event["number"] > len(users) - 2:
+        return {"message": "Invalid Parameter"}
+    # チョコあげる人がワークスペースにいないユーザIDの場合エラー
+    exist_flg = False
+    for user in users:
+        if user["id"] == event["name"]:
+            exist_flg = True
+    if not exist_flg:
+        return {"message": "Invalid Parameter"}
 
     # 対象外のユーザーを除外(Bot, 運営者)
     # TODO: 運営者を削除
