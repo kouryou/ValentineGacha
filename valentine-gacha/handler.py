@@ -24,6 +24,9 @@ def select_random_user(event, context):
     # レスポンスからユーザー情報を抽出
     users = users_list_response["members"]
 
+    # チョコあげる人のユーザID
+    presenter_user_id = ""
+
     # バリデーション
     # 指定人数がチョコ欲しい人を超えていた場合エラー
     if event["number"] > len(users) - 2:
@@ -31,14 +34,15 @@ def select_random_user(event, context):
     # チョコあげる人がワークスペースにいないユーザIDの場合エラー
     exist_flg = False
     for user in users:
-        if user["id"] == event["name"]:
+        if user["profile"]["real_name"] == event["name"]:
             exist_flg = True
+            presenter_user_id = user["id"]
     if not exist_flg:
         return {"message": "Invalid Parameter"}
 
     # 対象外のユーザーを除外(Bot, 運営者)
     # TODO: 運営者を削除
-    excluded_users = ["USLACKBOT", "UG2Q80MFE"]
+    excluded_users = ["USLACKBOT", "UG2Q80MFE", presenter_user_id]
     applicable_users = [user for user in users if not user["id"] in excluded_users]
 
     # ランダムでユーザー選択
@@ -63,7 +67,7 @@ def select_random_user(event, context):
     logger.warn(selected_users_name)
 
     # 通知用メッセージ組み立て
-    send_text = event["name"] + "です :heart: \n" + selected_users_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
+    send_text = "*" + event["name"] + "* です :heart: \n" + selected_users_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
 
     # メッセージ画像取得
     image = urllib.request.urlopen(os.environ["MESSAGE_IMAGE_URL"]).read()
@@ -83,11 +87,11 @@ def select_random_user(event, context):
 
     # グループ名作成用ランダム文字列
     random_str = ""
-    for i in range(10):
-        random_str += random.choice(string.digits + string.ascii_letters)
+    for i in range(5):
+        random_str += random.choice(string.digits)
 
     # グループ名作成
-    group_name = "当選者と女神様-" + random_str
+    group_name = "当選者と" + event["name"] + "-" + random_str
     # グループ作成
     created_group = sc_user.api_call(
         "groups.create",
@@ -97,7 +101,7 @@ def select_random_user(event, context):
     group_id = created_group["group"]["id"]
 
     # チョコをあげる人と当選者の一覧作成
-    selected_users_id.append(event["name"])
+    selected_users_id.append(presenter_user_id)
     # 新規グループに招待
     for selected_user_id in selected_users_id:
         sc_user.api_call(
