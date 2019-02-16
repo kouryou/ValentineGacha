@@ -52,7 +52,7 @@ def select_random_user(event, context):
         # 当選者のID一覧作成
         selected_users_id.append(selected_user["id"])
         # 当選者のメンション一覧作成
-        mention = "<@" + selected_user["id"] + ">\n"
+        mention = "<@" + selected_user["id"] + ">さん\n"
         selected_users_mention += mention
         # 当選者の名前一覧作成
         selected_users_name.append(selected_user["profile"]["real_name"])
@@ -63,7 +63,7 @@ def select_random_user(event, context):
     logger.warn(selected_users_name)
 
     # 通知用メッセージ組み立て
-    send_text = selected_users_mention + "<@" + event["name"] + "> さんがチョコあげるって :chocolate_bar: \n私からじゃないからね！"
+    send_text = event["name"] + "です :heart: \n" + selected_users_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
 
     # メッセージ画像取得
     image = urllib.request.urlopen(os.environ["MESSAGE_IMAGE_URL"]).read()
