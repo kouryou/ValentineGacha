@@ -97,7 +97,7 @@ def select_random_user(event, context):
         "groups.create",
         name=group_name
     )
-    #グループID取得
+    # グループID取得
     group_id = created_group["group"]["id"]
 
     # チョコをあげる人と当選者の一覧作成
@@ -109,6 +109,12 @@ def select_random_user(event, context):
             channel=group_id,
             user=selected_user_id
         )
+
+    # グループ退会
+    sc_user.api_call(
+        "groups.leave",
+        channel=group_id
+    )
 
     new_channel_url = os.environ["VALENTINE_GACHA_URL"] + group_id
 
