@@ -7,15 +7,14 @@ import urllib.request
 import string
 
 
+# 環境変数読み込み
+notice_channel = os.environ["SLACK_NOTICE_CHANNEL"]
+slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
+# SlackClient作成
+sc_bot = SlackClient(slack_bot_token)
+
+#
 def select_random_user(event, context):
-
-    # 環境変数読み込み
-    notice_channel = os.environ["SLACK_NOTICE_CHANNEL"]
-    slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
-
-    # SlackClient作成
-    sc_bot = SlackClient(slack_bot_token)
-
     # ユーザー一覧取得
     users_list_response = sc_bot.api_call(
         "users.list"
