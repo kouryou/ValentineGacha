@@ -29,7 +29,7 @@ def select_random_user(event, context):
 
     # バリデーション
     # 指定人数がチョコ欲しい人を超えていた場合エラー
-    if event["number"] > len(users) - 2:
+    if event["number"] > len(users):
         return {"message": "Invalid Parameter"}
     # チョコあげる人がワークスペースにいないユーザIDの場合エラー
     exist_flg = False
@@ -40,9 +40,8 @@ def select_random_user(event, context):
     if not exist_flg:
         return {"message": "Invalid Parameter"}
 
-    # 対象外のユーザーを除外(Bot, 運営者)
-    # TODO: 運営者を削除
-    excluded_users = ["USLACKBOT", "UG2Q80MFE", presenter_user_id]
+    # 対象外のユーザーを除外
+    excluded_users = []
     applicable_users = [user for user in users if not user["id"] in excluded_users]
 
     # ランダムでユーザー選択
