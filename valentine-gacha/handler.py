@@ -29,37 +29,8 @@ def select_random_user(event, context):
     # 当選者を選ぶ
     winners = select_winners(event, users)
 
-    # 当選者のメンションと名前の一覧を作成
-    winners_name = []
-    winners_id = []
-    winners_mention = ""
-    for winner in winners:
-        # 当選者のID一覧作成
-        winners_id.append(winner["id"])
-        # 当選者のメンション一覧作成
-        mention = "<@" + winner["id"] + ">さん\n"
-        winners_mention += mention
-        # 当選者の名前一覧作成
-        winners_name.append(winner["profile"]["real_name"])
-
-    # 選ばれたユーザー情報をログ出力
-    logger = logging.getLogger()
-    logger.warn(winners_mention)
-    logger.warn(winners_name)
-
-    # 通知用メッセージ組み立て
-    send_text = "*" + event["name"] + "* です :heart: \n" + winners_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
-
-    # メッセージ画像取得
-    image = urllib.request.urlopen(os.environ["MESSAGE_IMAGE_URL"]).read()
-
     # slack通知
-    sc_bot.api_call(
-        "files.upload",
-        initial_comment=send_text,
-        file=image,
-        channels=notice_channel
-    )
+    notice_to_slack(event, winners)
 
     # 環境変数読み込み
     slack_user_token = os.environ["SLACK_USER_TOKEN"]
@@ -138,3 +109,36 @@ def select_winners(event, users):
     # ランダムでユーザー選択
     winners = random.sample(applicable_users, event["number"])
     return winners
+
+def notice_to_slack(event, winners):
+    # 当選者のメンションと名前の一覧を作成
+    winners_name = []
+    winners_id = []
+    winners_mention = ""
+    for winner in winners:
+        # 当選者のID一覧作成
+        winners_id.append(winner["id"])
+        # 当選者のメンション一覧作成
+        mention = "<@" + winner["id"] + ">さん\n"
+        winners_mention += mention
+        # 当選者の名前一覧作成
+        winners_name.append(winner["profile"]["real_name"])
+
+    # 選ばれたユーザー情報をログ出力
+    logger = logging.getLogger()
+    logger.warn(winners_mention)
+    logger.warn(winners_name)
+
+    # 通知用メッセージ組み立て
+    send_text = "*" + event["name"] + "* です :heart: \n" + winners_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
+
+    # メッセージ画像取得
+    image = urllib.request.urlopen(os.environ["MESSAGE_IMAGE_URL"]).read()
+
+    # slack通知
+    sc_bot.api_call(
+        "files.upload",
+        initial_comment=send_text,
+        file=image,
+        channels=notice_channel
+    )
