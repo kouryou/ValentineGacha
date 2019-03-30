@@ -26,33 +26,29 @@ def select_random_user(event, context):
     # チョコあげる人のユーザID
     presenter_user_id = filter(lambda user: user["profile"]["real_name"] == event["name"], users)
 
-    # 対象外のユーザーを除外
-    excluded_users = []
-    applicable_users = [user for user in users if not user["id"] in excluded_users]
-
-    # ランダムでユーザー選択
-    selected_users = random.sample(applicable_users, event["number"])
+    # 当選者を選ぶ
+    winners = select_winners(event, users)
 
     # 当選者のメンションと名前の一覧を作成
-    selected_users_name = []
-    selected_users_id = []
-    selected_users_mention = ""
-    for selected_user in selected_users:
+    winners_name = []
+    winners_id = []
+    winners_mention = ""
+    for winner in winners:
         # 当選者のID一覧作成
-        selected_users_id.append(selected_user["id"])
+        winners_id.append(winner["id"])
         # 当選者のメンション一覧作成
-        mention = "<@" + selected_user["id"] + ">さん\n"
-        selected_users_mention += mention
+        mention = "<@" + winner["id"] + ">さん\n"
+        winners_mention += mention
         # 当選者の名前一覧作成
-        selected_users_name.append(selected_user["profile"]["real_name"])
+        winners_name.append(winner["profile"]["real_name"])
 
     # 選ばれたユーザー情報をログ出力
     logger = logging.getLogger()
-    logger.warn(selected_users_mention)
-    logger.warn(selected_users_name)
+    logger.warn(winners_mention)
+    logger.warn(winners_name)
 
     # 通知用メッセージ組み立て
-    send_text = "*" + event["name"] + "* です :heart: \n" + selected_users_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
+    send_text = "*" + event["name"] + "* です :heart: \n" + winners_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
 
     # メッセージ画像取得
     image = urllib.request.urlopen(os.environ["MESSAGE_IMAGE_URL"]).read()
@@ -86,13 +82,13 @@ def select_random_user(event, context):
     group_id = created_group["group"]["id"]
 
     # チョコをあげる人と当選者の一覧作成
-    selected_users_id.append(presenter_user_id)
+    winners_id.append(presenter_user_id)
     # 新規グループに招待
-    for selected_user_id in selected_users_id:
+    for winner_id in winners_id:
         sc_user.api_call(
             "groups.invite",
             channel=group_id,
-            user=selected_user_id
+            user=winner_id
         )
 
     # グループ退会
@@ -133,3 +129,12 @@ def validate(event, users):
             return None
 
     return "Invalid user"
+
+def select_winners(event, users):
+    # 対象外のユーザーを除外
+    excluded_users = []
+    applicable_users = [user for user in users if not user["id"] in excluded_users]
+
+    # ランダムでユーザー選択
+    winners = random.sample(applicable_users, event["number"])
+    return winners
