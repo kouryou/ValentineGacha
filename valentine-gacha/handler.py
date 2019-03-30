@@ -32,6 +32,12 @@ def select_random_user(event, context):
     # slack通知
     notice_to_slack(event, winners)
 
+    # 当選者のID一覧を取得
+    winners_id = get_winners_id(winners)
+
+    # 当選者の名前一覧を取得
+    winners_name = get_winners_name(winners)
+
     # 環境変数読み込み
     slack_user_token = os.environ["SLACK_USER_TOKEN"]
     # SlackClient作成
@@ -101,6 +107,7 @@ def validate(event, users):
 
     return "Invalid user"
 
+# 当選者を選ぶ
 def select_winners(event, users):
     # 対象外のユーザーを除外
     excluded_users = []
@@ -110,24 +117,43 @@ def select_winners(event, users):
     winners = random.sample(applicable_users, event["number"])
     return winners
 
-def notice_to_slack(event, winners):
-    # 当選者のメンションと名前の一覧を作成
-    winners_name = []
+# 当選者のID一覧を取得
+def get_winners_id(winners):
+    # 当選者のID一覧を作成
     winners_id = []
-    winners_mention = ""
+
     for winner in winners:
         # 当選者のID一覧作成
         winners_id.append(winner["id"])
-        # 当選者のメンション一覧作成
-        mention = "<@" + winner["id"] + ">さん\n"
-        winners_mention += mention
+
+    # 当選者のIDをログ出力
+    logger = logging.getLogger()
+    logger.warn(winners_id)
+
+    return winners_id
+
+# 当選者の名前の一覧を取得
+def get_winners_name(winners):
+    winners_name = []
+
+    for winner in winners:
         # 当選者の名前一覧作成
         winners_name.append(winner["profile"]["real_name"])
 
-    # 選ばれたユーザー情報をログ出力
+    # 当選者名をログ出力
     logger = logging.getLogger()
-    logger.warn(winners_mention)
     logger.warn(winners_name)
+
+    return winners_name
+
+# slack通知
+def notice_to_slack(event, winners):
+    # 当選者のメンションと名前の一覧を作成
+    winners_mention = ""
+    for winner in winners:
+        # 当選者のメンション一覧作成
+        mention = "<@" + winner["id"] + ">さん\n"
+        winners_mention += mention
 
     # 通知用メッセージ組み立て
     send_text = "*" + event["name"] + "* です :heart: \n" + winners_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
