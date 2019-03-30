@@ -23,21 +23,13 @@ def select_random_user(event, context):
     # レスポンスからユーザー情報を抽出
     users = users_list_response["members"]
 
-    # チョコあげる人のユーザID
-    presenter_user_id = ""
-
     # バリデーション
-    # 指定人数がチョコ欲しい人を超えていた場合エラー
-    if event["number"] > len(users):
-        return {"message": "Invalid Parameter"}
-    # チョコあげる人がワークスペースにいないユーザIDの場合エラー
-    exist_flg = False
-    for user in users:
-        if user["profile"]["real_name"] == event["name"]:
-            exist_flg = True
-            presenter_user_id = user["id"]
-    if not exist_flg:
-        return {"message": "Invalid Parameter"}
+    validation_message = validate(event, users)
+    if validation_message is not None:
+        return {"message": validation_message}
+
+    # チョコあげる人のユーザID
+    presenter_user_id = filter(lambda user: user["profile"]["real_name"] == event["name"], users)
 
     # 対象外のユーザーを除外
     excluded_users = []
@@ -123,3 +115,17 @@ def select_random_user(event, context):
     }
 
     return response
+
+# バリデーション
+def validate(event, users):
+    # 指定人数がチョコ欲しい人を超えていた場合エラー
+    if event["number"] > len(users):
+        return "Invalid number"
+
+    # チョコあげる人がワークスペースにいないユーザの場合エラー
+    exist_flg = False
+    for user in users:
+        if user["profile"]["real_name"] == event["name"]:
+            return None
+
+    return "Invalid user"
