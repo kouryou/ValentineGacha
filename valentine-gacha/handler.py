@@ -15,13 +15,8 @@ sc_bot = SlackClient(slack_bot_token)
 
 #
 def select_random_user(event, context):
-    # ユーザー一覧取得
-    users_list_response = sc_bot.api_call(
-        "users.list"
-    )
-
-    # レスポンスからユーザー情報を抽出
-    users = users_list_response["members"]
+    # ユーザー一覧を取得
+    users = get_users_list()
 
     # バリデーション
     validation_message = validate(event, users)
@@ -110,11 +105,20 @@ def select_random_user(event, context):
 
     # レスポンス作成
     response = {
-        "name": selected_users_name,
+        "name": winners_name,
         "url": new_channel_url
     }
 
     return response
+
+# ユーザー一覧取得
+def get_users_list():
+    users_list_response = sc_bot.api_call(
+        "users.list"
+    )
+
+    # レスポンスからユーザー情報を抽出
+    return users_list_response["members"]
 
 # バリデーション
 def validate(event, users):
