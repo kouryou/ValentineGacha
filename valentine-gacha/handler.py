@@ -41,7 +41,11 @@ def select_random_user(event, context):
     # 当選者の名前一覧を取得
     winners_name = get_winners_name(winners)
 
-    new_channel_id = create_winners_and_presenter_channel(event, presenter_user_id, winners_id)
+    # チョコをあげる人と当選者のチャンネル作成
+    new_channel_id = create_winners_and_presenter_channel(event)
+
+    # 新チャンネルにチョコあげる人と当選者を招待
+    invite_new_channel(new_channel_id, presenter_user_id, winners_id)
 
     # グループ退会
     sc_user.api_call(
@@ -150,7 +154,9 @@ def notice_to_slack(event, winners):
         channels=notice_channel
     )
 
-def create_winners_and_presenter_channel(event, presenter_user_id, winners_id):
+
+# チョコあげる人と当選者のチャンネル作成
+def create_winners_and_presenter_channel(event):
     # グループ名作成用ランダム文字列
     random_str = ""
     for i in range(5):
@@ -163,11 +169,16 @@ def create_winners_and_presenter_channel(event, presenter_user_id, winners_id):
         "groups.create",
         name=group_name
     )
-    # グループID取得
-    new_channel_id = created_group["group"]["id"]
 
-    # チョコをあげる人と当選者の一覧作成
+    # グループID取得
+    return created_group["group"]["id"]
+
+
+# 新チャンネルにチョコあげる人と当選者を招待
+def invite_new_channel(new_channel_id, presenter_user_id, winners_id):
+    # チョコあげる人と当選者の一覧作成
     winners_id.append(presenter_user_id)
+
     # 新規グループに招待
     for winner_id in winners_id:
         sc_user.api_call(
@@ -175,5 +186,3 @@ def create_winners_and_presenter_channel(event, presenter_user_id, winners_id):
             channel=new_channel_id,
             user=winner_id
         )
-
-    return new_channel_id
