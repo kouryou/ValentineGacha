@@ -47,19 +47,11 @@ def select_random_user(event, context):
     # 新チャンネルにチョコあげる人と当選者を招待
     invite_new_channel(new_channel_id, presenter_user_id, winners_id)
 
-    # グループ退会
-    sc_user.api_call(
-        "groups.leave",
-        channel=new_channel_id
-    )
-
-    new_channel_url = os.environ["VALENTINE_GACHA_URL"] + new_channel_id
+    # 新チャンネルを退会
+    leave_new_channel(new_channel_id)
 
     # レスポンス作成
-    response = {
-        "name": winners_name,
-        "url": new_channel_url
-    }
+    response = create_response(new_channel_id)
 
     return response
 
@@ -186,3 +178,24 @@ def invite_new_channel(new_channel_id, presenter_user_id, winners_id):
             channel=new_channel_id,
             user=winner_id
         )
+
+
+# 新チャンネルを退会
+def leave_new_channel(new_channel_id):
+    sc_user.api_call(
+        "groups.leave",
+        channel=new_channel_id
+    )
+
+
+# レスポンス作成
+def create_response(new_channel_id):
+    new_channel_url = os.environ["VALENTINE_GACHA_URL"] + new_channel_id
+
+    # レスポンス作成
+    response = {
+        "name": winners_name,
+        "url": new_channel_url
+    }
+
+    return response
