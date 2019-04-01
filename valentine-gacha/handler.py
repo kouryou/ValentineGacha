@@ -112,8 +112,8 @@ def get_winners_id(winners):
 def get_winners_name(winners):
     winners_name = []
 
+    # 当選者の名前一覧作成
     for winner in winners:
-        # 当選者の名前一覧作成
         winners_name.append(winner["profile"]["real_name"])
 
     # 当選者名をログ出力
