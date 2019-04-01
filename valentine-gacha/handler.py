@@ -149,20 +149,20 @@ def notice_to_slack(event, winners):
 
 # チョコあげる人と当選者のチャンネル作成
 def create_winners_and_presenter_channel(event):
-    # グループ名作成用ランダム文字列
+    # チャンネル名が被らないように、ランダム文字列作成
     random_str = ""
     for i in range(5):
         random_str += random.choice(string.digits)
 
-    # グループ名作成
+    # チャンネル名作成
     group_name = "当選者と" + event["name"] + "-" + random_str
-    # グループ作成
+    # チャンネル作成
     created_group = sc_user.api_call(
         "groups.create",
         name=group_name
     )
 
-    # グループID取得
+    # チャンネルID取得
     return created_group["group"]["id"]
 
 
@@ -171,7 +171,7 @@ def invite_new_channel(new_channel_id, presenter_user_id, winners_id):
     # チョコあげる人と当選者の一覧作成
     winners_id.append(presenter_user_id)
 
-    # 新規グループに招待
+    # 新チャンネルに招待
     for winner_id in winners_id:
         sc_user.api_call(
             "groups.invite",
