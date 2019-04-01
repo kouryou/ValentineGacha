@@ -41,38 +41,15 @@ def select_random_user(event, context):
     # 当選者の名前一覧を取得
     winners_name = get_winners_name(winners)
 
-    # グループ名作成用ランダム文字列
-    random_str = ""
-    for i in range(5):
-        random_str += random.choice(string.digits)
-
-    # グループ名作成
-    group_name = "当選者と" + event["name"] + "-" + random_str
-    # グループ作成
-    created_group = sc_user.api_call(
-        "groups.create",
-        name=group_name
-    )
-    # グループID取得
-    group_id = created_group["group"]["id"]
-
-    # チョコをあげる人と当選者の一覧作成
-    winners_id.append(presenter_user_id)
-    # 新規グループに招待
-    for winner_id in winners_id:
-        sc_user.api_call(
-            "groups.invite",
-            channel=group_id,
-            user=winner_id
-        )
+    new_channel_id = create_winners_and_presenter_channel(event, presenter_user_id, winners_id)
 
     # グループ退会
     sc_user.api_call(
         "groups.leave",
-        channel=group_id
+        channel=new_channel_id
     )
 
-    new_channel_url = os.environ["VALENTINE_GACHA_URL"] + group_id
+    new_channel_url = os.environ["VALENTINE_GACHA_URL"] + new_channel_id
 
     # レスポンス作成
     response = {
@@ -172,3 +149,31 @@ def notice_to_slack(event, winners):
         file=image,
         channels=notice_channel
     )
+
+def create_winners_and_presenter_channel(event, presenter_user_id, winners_id):
+    # グループ名作成用ランダム文字列
+    random_str = ""
+    for i in range(5):
+        random_str += random.choice(string.digits)
+
+    # グループ名作成
+    group_name = "当選者と" + event["name"] + "-" + random_str
+    # グループ作成
+    created_group = sc_user.api_call(
+        "groups.create",
+        name=group_name
+    )
+    # グループID取得
+    new_channel_id = created_group["group"]["id"]
+
+    # チョコをあげる人と当選者の一覧作成
+    winners_id.append(presenter_user_id)
+    # 新規グループに招待
+    for winner_id in winners_id:
+        sc_user.api_call(
+            "groups.invite",
+            channel=new_channel_id,
+            user=winner_id
+        )
+
+    return new_channel_id
