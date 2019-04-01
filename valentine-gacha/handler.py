@@ -10,10 +10,13 @@ import string
 # 環境変数読み込み
 notice_channel = os.environ["SLACK_NOTICE_CHANNEL"]
 slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
+slack_user_token = os.environ["SLACK_USER_TOKEN"]
+
 # SlackClient作成
 sc_bot = SlackClient(slack_bot_token)
+sc_user = SlackClient(slack_user_token)
 
-#
+
 def select_random_user(event, context):
     # ユーザー一覧を取得
     users = get_users_list()
@@ -37,11 +40,6 @@ def select_random_user(event, context):
 
     # 当選者の名前一覧を取得
     winners_name = get_winners_name(winners)
-
-    # 環境変数読み込み
-    slack_user_token = os.environ["SLACK_USER_TOKEN"]
-    # SlackClient作成
-    sc_user = SlackClient(slack_user_token)
 
     # グループ名作成用ランダム文字列
     random_str = ""
@@ -84,6 +82,7 @@ def select_random_user(event, context):
 
     return response
 
+
 # ユーザー一覧取得
 def get_users_list():
     users_list_response = sc_bot.api_call(
@@ -92,6 +91,7 @@ def get_users_list():
 
     # レスポンスからユーザー情報を抽出
     return users_list_response["members"]
+
 
 # バリデーション
 def validate(event, users):
@@ -107,6 +107,7 @@ def validate(event, users):
 
     return "Invalid user"
 
+
 # 当選者を選ぶ
 def select_winners(event, users):
     # 対象外のユーザーを除外
@@ -116,6 +117,7 @@ def select_winners(event, users):
     # ランダムでユーザー選択
     winners = random.sample(applicable_users, event["number"])
     return winners
+
 
 # 当選者のID一覧を取得
 def get_winners_id(winners):
@@ -132,6 +134,7 @@ def get_winners_id(winners):
 
     return winners_id
 
+
 # 当選者の名前の一覧を取得
 def get_winners_name(winners):
     winners_name = []
@@ -145,6 +148,7 @@ def get_winners_name(winners):
     logger.warn(winners_name)
 
     return winners_name
+
 
 # slack通知
 def notice_to_slack(event, winners):
