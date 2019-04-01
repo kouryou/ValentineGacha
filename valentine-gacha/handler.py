@@ -51,7 +51,7 @@ def select_random_user(event, context):
     leave_new_channel(new_channel_id)
 
     # レスポンス作成
-    response = create_response(new_channel_id)
+    response = create_response(new_channel_id, winners_name)
 
     return response
 
@@ -189,7 +189,7 @@ def leave_new_channel(new_channel_id):
 
 
 # レスポンス作成
-def create_response(new_channel_id):
+def create_response(new_channel_id, winners_name):
     new_channel_url = os.environ["VALENTINE_GACHA_URL"] + new_channel_id
 
     # レスポンス作成
