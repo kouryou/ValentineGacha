@@ -72,20 +72,20 @@ def validate(event, users):
     if event["number"] > len(users):
         return "Invalid number"
 
+    # チョコあげる人取得
+    exist_user = [user for user in users
+                  if user["profile"]["real_name"] == event["name"]]
     # チョコあげる人がワークスペースにいないユーザの場合エラー
-    exist_flg = False
-    for user in users:
-        if user["profile"]["real_name"] == event["name"]:
-            return None
-
-    return "Invalid user"
+    if not exist_user:
+        return "Invalid user"
 
 
 # 当選者を選ぶ
 def select_winners(event, users):
     # 対象外のユーザーを除外
     excluded_users = []
-    applicable_users = [user for user in users if not user["id"] in excluded_users]
+    applicable_users = [user for user in users
+                        if not user["id"] in excluded_users]
 
     # ランダムでユーザー選択
     winners = random.sample(applicable_users, event["number"])
@@ -95,11 +95,7 @@ def select_winners(event, users):
 # 当選者のID一覧を取得
 def get_winners_id(winners):
     # 当選者のID一覧を作成
-    winners_id = []
-
-    for winner in winners:
-        # 当選者のID一覧作成
-        winners_id.append(winner["id"])
+    winners_id = [winner["id"] for winner in winners]
 
     # 当選者のIDをログ出力
     logger = logging.getLogger()
@@ -110,11 +106,7 @@ def get_winners_id(winners):
 
 # 当選者の名前の一覧を取得
 def get_winners_name(winners):
-    winners_name = []
-
-    # 当選者の名前一覧作成
-    for winner in winners:
-        winners_name.append(winner["profile"]["real_name"])
+    winners_name = [winner["profile"]["real_name"] for winner in winners]
 
     # 当選者名をログ出力
     logger = logging.getLogger()
@@ -125,12 +117,8 @@ def get_winners_name(winners):
 
 # slack通知
 def notice_to_slack(event, winners):
-    # 当選者のメンションと名前の一覧を作成
-    winners_mention = ""
-    for winner in winners:
-        # 当選者のメンション一覧作成
-        mention = "<@" + winner["id"] + ">さん\n"
-        winners_mention += mention
+    # 当選者のメンション一覧を作成
+    winners_mention = "".join(["<@" + winner["id"] + ">さん\n" for winner in winners])
 
     # 通知用メッセージ組み立て
     send_text = "*" + event["name"] + "* です :heart: \n" + winners_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
@@ -150,9 +138,7 @@ def notice_to_slack(event, winners):
 # チョコあげる人と当選者のチャンネル作成
 def create_winners_and_presenter_channel(event):
     # チャンネル名が被らないように、ランダム文字列作成
-    random_str = ""
-    for i in range(5):
-        random_str += random.choice(string.digits)
+    random_str = "".join([random.choice(string.digits) for i in range(5)])
 
     # チャンネル名作成
     group_name = "当選者と" + event["name"] + "-" + random_str
