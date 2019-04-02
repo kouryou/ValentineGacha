@@ -58,6 +58,7 @@ def select_random_user(event, context):
 
 # ユーザー一覧取得
 def get_users_list():
+    # ワークスペースのユーザー一覧を取得
     users_list_response = sc_bot.api_call(
         "users.list"
     )
@@ -106,6 +107,7 @@ def get_winners_id(winners):
 
 # 当選者の名前の一覧を取得
 def get_winners_name(winners):
+    # 当選者の名前一覧を作成
     winners_name = [winner["profile"]["real_name"] for winner in winners]
 
     # 当選者名をログ出力
@@ -176,6 +178,7 @@ def leave_new_channel(new_channel_id):
 
 # レスポンス作成
 def create_response(new_channel_id, winners_name):
+    # 新チャンネルのURLを作成
     new_channel_url = os.environ["VALENTINE_GACHA_URL"] + new_channel_id
 
     # レスポンス作成
