@@ -4,20 +4,29 @@ from slackclient import SlackClient
 import random
 
 
-def select_random_user(event, context):
+def handler(event, context):
+    # チョコあげる人のユーザID
+    presenter_id = event["presenter_id"]
+    # 当選人数
+    number = event["number"]
+
+    # ワークスペースから当選者を選ぶ
+    response = select_winners_in_my_workspace(presenter_id, number)
+
+    return response
+
+
+def select_winners_in_my_workspace(presenter_id, number):
     # ユーザー一覧を取得
     users = get_users_list()
 
     # バリデーション
-    validation_message = validate(event, users)
+    validation_message = validate(presenter_id, number, users)
     if validation_message is not None:
         return {"message": validation_message}
 
-    # チョコあげる人のユーザID
-    presenter_id = event["presenter_id"]
-
     # 当選者を選ぶ
-    winners = select_winners(event, users)
+    winners = select_winners(presenter_id, number, users)
 
     # レスポンス作成
     response = create_response(winners)
@@ -40,28 +49,28 @@ def get_users_list():
 
 
 # バリデーション
-def validate(event, users):
+def validate(presenter_id, number, users):
     # 指定人数がチョコ欲しい人を超えていた場合エラー
-    if event["number"] > len(users):
+    if number > len(users):
         return "Invalid number"
 
     # チョコあげる人取得
     exist_user = [user for user in users
-                  if user["id"] == event["presenter_id"]]
+                  if user["id"] == presenter_id]
     # チョコあげる人がワークスペースにいないユーザの場合エラー
     if not exist_user:
         return "Invalid user"
 
 
 # 当選者を選ぶ
-def select_winners(event, users):
+def select_winners(presenter_id, number, users):
     # 対象外のユーザーを除外
     excluded_users = []
     applicable_users = [user for user in users
                         if not user["id"] in excluded_users]
 
     # ランダムでユーザー選択
-    winners = random.sample(applicable_users, event["number"])
+    winners = random.sample(applicable_users, number)
     return winners
 
 

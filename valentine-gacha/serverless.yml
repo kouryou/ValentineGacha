@@ -10,12 +10,12 @@ provider:
     ${file(./conf/env.yml)}
 
 functions:
-  select_random_user:
-    handler: handler.select_random_user
+  select_winners:
+    handler: select_winners.handler
     timeout: 30
     events:
       - http:
-          path: /users/random
+          path: /users/select
           method: post
           private: true
           cors: true
