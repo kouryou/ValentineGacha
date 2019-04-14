@@ -26,7 +26,8 @@ def select_random_user(event, context):
         return {"message": validation_message}
 
     # チョコあげる人のユーザID
-    presenter_user_id = filter(lambda user: user["profile"]["real_name"] == event["name"], users)
+    presenter_user_id = [user["id"] for user in users
+                         if user["profile"]["real_name"] == event["name"]]
 
     # 当選者を選ぶ
     winners = select_winners(event, users)
