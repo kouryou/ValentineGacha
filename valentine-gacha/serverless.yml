@@ -12,7 +12,7 @@ provider:
 functions:
   select_random_user:
     handler: handler.select_random_user
-    timeout: 60
+    timeout: 30
     events:
       - http:
           path: /users/random
@@ -23,6 +23,19 @@ functions:
           request:
             template:
               application/json: '{ "name" : $input.json("$.name"), "number" : $input.json("$.number") }'
+  notice_slack:
+    handler: notice_slack.handler
+    timeout: 30
+    events:
+      - http:
+          path: /slack/notice
+          method: post
+          private: true
+          cors: true
+          integration: lambda
+          request:
+            template:
+              application/json: '{ "presenter_name" : $input.json("$.presenter_name"), "winners_id" : $input.json("$.winners_id") }'
 
 plugins:
   - serverless-python-requirements

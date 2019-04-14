@@ -3,7 +3,6 @@ import logging
 import os
 from slackclient import SlackClient
 import random
-import urllib.request
 import string
 
 
@@ -31,9 +30,6 @@ def select_random_user(event, context):
 
     # 当選者を選ぶ
     winners = select_winners(event, users)
-
-    # slack通知
-    notice_to_slack(event, winners)
 
     # 当選者のID一覧を取得
     winners_id = get_winners_id(winners)
@@ -115,26 +111,6 @@ def get_winners_name(winners):
     logger.warn(winners_name)
 
     return winners_name
-
-
-# slack通知
-def notice_to_slack(event, winners):
-    # 当選者のメンション一覧を作成
-    winners_mention = "".join(["<@" + winner["id"] + ">さん\n" for winner in winners])
-
-    # 通知用メッセージ組み立て
-    send_text = "*" + event["name"] + "* です :heart: \n" + winners_mention + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
-
-    # メッセージ画像取得
-    image = urllib.request.urlopen(os.environ["MESSAGE_IMAGE_URL"]).read()
-
-    # slack通知
-    sc_bot.api_call(
-        "files.upload",
-        initial_comment=send_text,
-        file=image,
-        channels=notice_channel
-    )
 
 
 # チョコあげる人と当選者のチャンネル作成
