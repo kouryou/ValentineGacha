@@ -6,6 +6,8 @@ provider:
   region: ap-northeast-1
   apiKeys:
     - vaentine-gacha-key
+  environment:
+    ${file(./conf/env.yml)}
 
 functions:
   select_random_user:
