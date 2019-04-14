@@ -4,19 +4,19 @@ from slackclient import SlackClient
 
 
 def handler(event, context):
-    presenter_name = event["presenter_name"]
+    presenter_id = event["presenter_id"]
     winners_id = event["winners_id"]
-    notice_slack(presenter_name, winners_id)
+    notice_slack(presenter_id, winners_id)
 
 
 # slack通知
-def notice_slack(presenter_name, winners_id):
+def notice_slack(presenter_id, winners_id):
     # 当選者のメンション一覧を作成
     winners_mention = "".join(["<@" + winner_id + ">さん\n"
                                for winner_id in winners_id])
 
     # 通知用メッセージ組み立て
-    send_text = "*" + presenter_name + "* です :heart: \n" + winners_mention \
+    send_text = "<@" + presenter_id + ">です :heart: \n" + winners_mention \
               + "よかったらチョコ受けとってくれると嬉しいな :two_hearts:"
 
     # メッセージ画像取得

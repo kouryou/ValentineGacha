@@ -22,20 +22,35 @@ functions:
           integration: lambda
           request:
             template:
-              application/json: '{ "name" : $input.json("$.name"), "number" : $input.json("$.number") }'
+              application/json: '{ "presenter_id" : $input.json("$.presenter_id"), "number" : $input.json("$.number") }'
+
   notice_slack:
     handler: notice_slack.handler
     timeout: 30
     events:
       - http:
-          path: /slack/notice
+          path: /slack/channel/notice
           method: post
           private: true
           cors: true
           integration: lambda
           request:
             template:
-              application/json: '{ "presenter_name" : $input.json("$.presenter_name"), "winners_id" : $input.json("$.winners_id") }'
+              application/json: '{ "presenter_id" : $input.json("$.presenter_id"), "winners_id" : $input.json("$.winners_id") }'
+
+  execute_create_channel_flow:
+    handler: create_channel_flow.handler
+    timeout: 30
+    events:
+      - http:
+          path: /slack/channel/create
+          method: post
+          private: true
+          cors: true
+          integration: lambda
+          request:
+            template:
+              application/json: '{ "presenter_id" : $input.json("$.presenter_id"), "winners_id" : $input.json("$.winners_id") }'
 
 plugins:
   - serverless-python-requirements

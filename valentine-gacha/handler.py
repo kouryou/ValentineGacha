@@ -26,8 +26,7 @@ def select_random_user(event, context):
         return {"message": validation_message}
 
     # チョコあげる人のユーザID
-    presenter_user_id = [user["id"] for user in users
-                         if user["profile"]["real_name"] == event["name"]]
+    presenter_id = event["presenter_id"]
 
     # 当選者を選ぶ
     winners = select_winners(event, users)
@@ -39,10 +38,10 @@ def select_random_user(event, context):
     winners_name = get_winners_name(winners)
 
     # チョコをあげる人と当選者のチャンネル作成
-    new_channel_id = create_winners_and_presenter_channel(event)
+    new_channel_id = create_winners_and_presenter_channel()
 
     # 新チャンネルにチョコあげる人と当選者を招待
-    invite_new_channel(new_channel_id, presenter_user_id, winners_id)
+    invite_new_channel(new_channel_id, presenter_id, winners_id)
 
     # 新チャンネルを退会
     leave_new_channel(new_channel_id)
@@ -72,7 +71,7 @@ def validate(event, users):
 
     # チョコあげる人取得
     exist_user = [user for user in users
-                  if user["profile"]["real_name"] == event["name"]]
+                  if user["id"] == event["presenter_id"]]
     # チョコあげる人がワークスペースにいないユーザの場合エラー
     if not exist_user:
         return "Invalid user"
@@ -115,12 +114,12 @@ def get_winners_name(winners):
 
 
 # チョコあげる人と当選者のチャンネル作成
-def create_winners_and_presenter_channel(event):
+def create_winners_and_presenter_channel():
     # チャンネル名が被らないように、ランダム文字列作成
-    random_str = "".join([random.choice(string.digits) for i in range(5)])
+    random_str = "".join([random.choice(string.digits) for i in range(6)])
 
     # チャンネル名作成
-    group_name = "当選者と" + event["name"] + "-" + random_str
+    group_name = "バレンタインガチャ当選ルーム-" + random_str
     # チャンネル作成
     created_group = sc_user.api_call(
         "groups.create",
@@ -132,9 +131,9 @@ def create_winners_and_presenter_channel(event):
 
 
 # 新チャンネルにチョコあげる人と当選者を招待
-def invite_new_channel(new_channel_id, presenter_user_id, winners_id):
+def invite_new_channel(new_channel_id, presenter_id, winners_id):
     # チョコあげる人と当選者の一覧作成
-    winners_id.append(presenter_user_id)
+    winners_id.append(presenter_id)
 
     # 新チャンネルに招待
     for winner_id in winners_id:
@@ -160,7 +159,7 @@ def create_response(new_channel_id, winners_name):
 
     # レスポンス作成
     response = {
-        "name": winners_name,
+        "winners_name": winners_name,
         "url": new_channel_url
     }
 
