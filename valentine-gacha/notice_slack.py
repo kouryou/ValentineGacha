@@ -4,8 +4,11 @@ from slackclient import SlackClient
 
 
 def handler(event, context):
+    # チョコあげる人のユーザID
     presenter_id = event["presenter_id"]
+    # 当選者のユーザID
     winners_id = event["winners_id"]
+
     notice_slack(presenter_id, winners_id)
 
 

@@ -9,7 +9,9 @@ sc_user = SlackClient(os.environ["SLACK_USER_TOKEN"])
 
 # ハンドラ関数
 def handler(event, context):
+    # チョコあげる人のユーザID
     presenter_id = event["presenter_id"]
+    # 当選者のユーザID
     winners_id = event["winners_id"]
 
     # チャンネル作成のフローを実行
