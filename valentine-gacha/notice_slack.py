@@ -4,16 +4,28 @@ from slackclient import SlackClient
 
 
 def handler(event, context):
+    """ハンドラ関数
+
+    Keyword arguments:
+    event   -- イベントデータ
+    context -- ランタイム情報
+    """
     # チョコあげる人のユーザID
     presenter_id = event["presenter_id"]
     # 当選者のユーザID
     winners_id = event["winners_id"]
 
+    # slack通知
     notice_slack(presenter_id, winners_id)
 
 
-# slack通知
 def notice_slack(presenter_id, winners_id):
+    """slack通知
+
+    Keyword arguments:
+    presenter_id -- チョコあげる人のユーザID
+    winners_id   -- 当選者のユーザID
+    """
     # 当選者のメンション一覧を作成
     winners_mention = "".join(["<@" + winner_id + ">さん\n"
                                for winner_id in winners_id])
