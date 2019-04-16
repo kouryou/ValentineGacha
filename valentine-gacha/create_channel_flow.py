@@ -4,6 +4,7 @@ import string
 from slackclient import SlackClient
 
 
+# SlackClient作成
 sc_user = SlackClient(os.environ["SLACK_USER_TOKEN"])
 
 
