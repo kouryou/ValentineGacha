@@ -6,9 +6,12 @@ from slackclient import SlackClient
 def handler(event, context):
     """ハンドラ関数
 
-    Keyword arguments:
-    event   -- イベントデータ
-    context -- ランタイム情報
+    Parameters
+    ----------
+    event : dict
+        イベントデータ
+    context : dict
+        ランタイム情報
     """
     # チョコあげる人のユーザID
     presenter_id = event["presenter_id"]
@@ -22,9 +25,12 @@ def handler(event, context):
 def notice_slack(presenter_id, winners_id):
     """slack通知
 
-    Keyword arguments:
-    presenter_id -- チョコあげる人のユーザID
-    winners_id   -- 当選者のユーザID
+    Parameters
+    ----------
+    presenter_id : str
+        チョコあげる人のユーザID
+    winners_id : str
+        当選者のユーザID
     """
     # 当選者のメンション一覧を作成
     winners_mention = "".join(["<@" + winner_id + ">さん\n"
