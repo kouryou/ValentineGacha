@@ -5,6 +5,20 @@ import random
 
 
 def handler(event, context):
+    """ハンドラ関数
+
+    Parameters
+    ----------
+    event : dict
+        イベントデータ
+    context : dict
+        ランタイム情報
+
+    Returns
+    -------
+    dict
+        当選者の一覧を含むレスポンス
+    """
     # チョコあげる人のユーザID
     presenter_id = event["presenter_id"]
     # 当選人数
@@ -17,6 +31,20 @@ def handler(event, context):
 
 
 def select_winners_in_my_workspace(presenter_id, number):
+    """ワークスペースのユーザから当選者を選ぶ
+
+    Parameters
+    ----------
+    presenter_id : str
+        チョコあげる人のユーザID
+    number : int
+        当選人数
+
+    Returns
+    -------
+    dict
+        当選者の一覧を含むレスポンス
+    """
     # ユーザー一覧を取得
     users = get_users_list()
 
@@ -34,8 +62,14 @@ def select_winners_in_my_workspace(presenter_id, number):
     return response
 
 
-# ユーザー一覧取得
 def get_users_list():
+    """ワークスペースからユーザのリスト取得
+
+    Returns
+    -------
+    list
+        ワークスペースのユーザのリスト
+    """
     # SlackClient作成
     sc_bot = SlackClient(os.environ["SLACK_BOT_TOKEN"])
 
@@ -48,8 +82,23 @@ def get_users_list():
     return users_list_response["members"]
 
 
-# バリデーション
 def validate(presenter_id, number, users):
+    """バリデーション
+
+    Parameters
+    ----------
+    presenter_id : str
+        チョコあげる人のユーザID
+    number : int
+        当選人数
+    users : list
+        ワークスペースのユーザのリスト
+
+    Returns
+    -------
+    str or None
+        バリデーションに引っかかった場合はエラーメッセージ。問題なければNone
+    """
     # 指定人数がチョコ欲しい人を超えていた場合エラー
     if number > len(users):
         return "Invalid number"
@@ -62,8 +111,23 @@ def validate(presenter_id, number, users):
         return "Invalid user"
 
 
-# 当選者を選ぶ
 def select_winners(presenter_id, number, users):
+    """当選者を選ぶ
+
+    Parameters
+    ----------
+    presenter_id : str
+        チョコあげる人のユーザID
+    number : int
+        当選人数
+    users : list
+        ワークスペースのユーザのリスト
+
+    Returns
+    -------
+    list
+        当選者のリスト
+    """
     # 対象外のユーザーを除外
     excluded_users = []
     applicable_users = [user for user in users
@@ -74,8 +138,19 @@ def select_winners(presenter_id, number, users):
     return winners
 
 
-# レスポンス作成
 def create_response(winners):
+    """レスポンス作成
+
+    Parameters
+    ----------
+    winners : list
+        当選者のリスト
+
+    Returns
+    -------
+    dict
+        当選者の一覧を含むレスポンス
+    """
     # レスポンス用に当選者の情報を加工
     serialized_winners_data = serialize_winners_data(winners)
 
@@ -87,8 +162,19 @@ def create_response(winners):
     return response
 
 
-# 当選者の情報を加工
 def serialize_winners_data(winners):
+    """当選者の情報を加工
+
+    Parameters
+    ----------
+    winners : list
+        当選者のリスト
+
+    Returns
+    -------
+    list
+        レスポンス用に加工された当選者のリスト
+    """
     # 当選者のidと名前を抽出
     serialized_winners_data = [
         {
