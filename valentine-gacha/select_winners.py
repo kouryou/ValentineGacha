@@ -129,7 +129,7 @@ def select_winners(presenter_id, number, users):
         当選者のリスト
     """
     # 対象外のユーザーを除外
-    excluded_users = []
+    excluded_users = ["USLACKBOT"]
     applicable_users = [user for user in users
                         if not user["id"] in excluded_users]
 
