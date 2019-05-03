@@ -54,11 +54,11 @@ curl -X POST -H "Content-Type: application/json" -H "x-api-key: xxxxxxxxxxxxxxxx
 ```
 curl -X POST -H "Content-Type: application/json" -H "x-api-key: xxxxxxxxxxxxxxxxxx" -d '{"presenter_id":"チョコあげる人のユーザID", "winners_id":["当選者のユーザID"]}' https://xxxxxxxx/slack/channel/create
 ```
-以下のようにチャンネルが作成されます。
-![slack_screenshot](valentine-gacha/images/new_channel.png)
 レスポンスでは、新しいチャンネルのURLが返却されます。
 ```
 {
     "winners": "https://xxxxxxxxxx.slack.com/messages/yyyyyyy"
 }
 ```
+以下のようにチャンネルが作成されます。
+![slack_screenshot](valentine-gacha/images/new_channel.png)
