@@ -32,10 +32,6 @@ curl -X POST -H "Content-Type: application/json" -H "x-api-key: xxxxxxxxxxxxxxxx
         {
             "name": "xxxxxx",
             "id": "yyyyyyy"
-        },
-        {
-            "name": "aaaaaa",
-            "id": "bbbbbbb"
         }
     ]
 }
