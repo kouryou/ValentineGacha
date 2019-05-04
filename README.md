@@ -57,4 +57,4 @@ curl -X POST -H "Content-Type: application/json" -H "x-api-key: xxxxxxxxxxxxxxxx
 }
 ```
 以下のようにチャンネルが作成されます。
-![slack_screenshot](valentine-gacha/images/new_channel.png)
+<kbd><img src="valentine-gacha/images/new_channel.png" /></kbd>
